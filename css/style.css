@@ -82,4 +82,33 @@
     .page.active {
       display: block;
     }
+    .toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  background: #1a2218;
+  border: 1px solid rgba(74,222,128,0.3);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+}
 
