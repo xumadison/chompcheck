@@ -48,6 +48,54 @@
   <div class="toast-dot"></div>
   <span id="toast-msg"></span>
 </div>
+
+<div class="card">
+        <div class="card-label">Nutrition Results</div>
+        <div id="results-empty" style="padding:3rem 1rem;text-align:center;color:#6b7280;">
+          <div style="font-size:0.9rem;">Scan a barcode to see nutrition info</div>
+          <div style="font-size:0.78rem;margin-top:6px;">Works with any packaged food product</div>
+        </div>
+        <div id="results-content" style="display:none;">
+          <div class="result-card">
+            <div class="result-header">
+              <div>
+                <div class="product-name" id="res-product">—</div>
+                <div class="product-brand" id="res-brand"></div>
+              </div>
+              <div class="serving-badge" id="res-serving">Per 100g</div>
+            </div>
+            <div class="macro-grid">
+              <div class="macro-item calories">
+                <div class="macro-label">Calories</div>
+                <div class="macro-value" id="res-cal">—</div>
+                <div class="macro-dv" id="res-cal-dv"></div>
+              </div>
+              <div class="macro-item protein">
+                <div class="macro-label">Protein</div>
+                <div class="macro-value" id="res-prot">—</div>
+                <div class="macro-dv" id="res-prot-dv"></div>
+              </div>
+              <div class="macro-item sat-fat">
+                <div class="macro-label">Saturated Fat</div>
+                <div class="macro-value" id="res-satfat">—</div>
+                <div class="macro-dv" id="res-satfat-dv"></div>
+              </div>
+              <div class="macro-item sugar">
+                <div class="macro-label">Total Sugar</div>
+                <div class="macro-value" id="res-sugar">—</div>
+                <div class="macro-dv" id="res-sugar-dv"></div>
+              </div>
+            </div>
+            <div class="nutrient-extras" id="nutrient-extras"></div>
+            <div class="goal-fit good" id="goal-fit-box">
+              <div class="goal-fit-label" id="goal-fit-label">Goal Alignment</div>
+              <div class="goal-fit-text" id="goal-fit-text">—</div>
+            </div>
+            <button class="btn btn-primary" onclick="logCurrentScan()">Add to Monthly Log</button>
+            <button class="btn btn-secondary" onclick="resetScan()">Scan Another</button>
+          </div>
+        </div>
+      </div>
     <script src="javascript/app.js"></script>
 </body>
 </html>

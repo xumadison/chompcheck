@@ -1,6 +1,7 @@
 var scannerActive = false;
 var codeReader = null; 
 var lastScanned = '';
+var currentScanData = null;
 
 function showPage(p) {
       document.querySelectorAll('.page').forEach(function(el) {
@@ -136,4 +137,74 @@ function showToast(msg) {
   toastTimer = setTimeout(function() {
     t.classList.remove('show');
   }, 3000);
+}
+
+// Display results in the UI
+function showResults(d) {
+  document.getElementById('results-empty').style.display = 'none';
+  document.getElementById('results-content').style.display = 'block';
+
+  document.getElementById('res-product').textContent = d.product;
+  document.getElementById('res-brand').textContent = d.brand;
+  document.getElementById('res-serving').textContent = d.serving;
+  document.getElementById('res-cal').textContent = d.calories || '—';
+  document.getElementById('res-prot').textContent = d.protein_g + 'g';
+  document.getElementById('res-satfat').textContent = d.sat_fat_g + 'g';
+  document.getElementById('res-sugar').textContent = d.total_sugar_g + 'g';
+
+  document.getElementById('res-cal-dv').textContent = d.calories ? Math.round(d.calories / 2000 * 100) + '% daily' : '';
+  document.getElementById('res-prot-dv').textContent = d.protein_g ? Math.round(d.protein_g / 50 * 100) + '% daily' : '';
+  document.getElementById('res-satfat-dv').textContent = d.sat_fat_g ? Math.round(d.sat_fat_g / 20 * 100) + '% daily' : '';
+  document.getElementById('res-sugar-dv').textContent = d.total_sugar_g ? Math.round(d.total_sugar_g / 50 * 100) + '% daily' : '';
+
+  var extras = document.getElementById('nutrient-extras');
+  extras.innerHTML = '';
+  if (d.fiber_g) extras.innerHTML += '<div class="nutrient-chip">Fiber <span>' + d.fiber_g + 'g</span></div>';
+  if (d.fat_g) extras.innerHTML += '<div class="nutrient-chip">Total Fat <span>' + d.fat_g + 'g</span></div>';
+  if (d.carbs_g) extras.innerHTML += '<div class="nutrient-chip">Carbs <span>' + d.carbs_g + 'g</span></div>';
+  if (d.sodium_mg) extras.innerHTML += '<div class="nutrient-chip">Sodium <span>' + d.sodium_mg + 'mg</span></div>';
+
+  var ev = evaluateGoalFit(d);
+  var fitBox = document.getElementById('goal-fit-box');
+  fitBox.className = 'goal-fit ' + ev.fit;
+  document.getElementById('goal-fit-label').textContent = ev.label;
+  document.getElementById('goal-fit-text').textContent = ev.text;
+  d.goal_fit = ev.fit;
+
+  currentScanData = d;
+}
+
+function evaluateGoalFit(d) {
+  var goal = getEffectiveGoal();
+  var score = 0;
+  var issues = [];
+
+  if (d.protein_g >= goal.minProtein) { score++; }
+  else { issues.push('protein below target (' + goal.minProtein + 'g)'); }
+
+  if (d.calories <= goal.maxCal) { score++; }
+  else { issues.push('calories above target'); }
+
+  if (d.sat_fat_g <= goal.maxSatFat) { score++; }
+  else { issues.push('saturated fat above target'); }
+
+  if (d.total_sugar_g <= goal.maxSugar) { score++; }
+  else { issues.push('sugar above target'); }
+
+  var fit = score >= 3 ? 'good' : score >= 2 ? 'ok' : 'watch';
+  var label = fit === 'good' ? 'Great Fit' : fit === 'watch' ? 'Use Caution' : 'Moderate Fit';
+  var text = fit === 'good'
+    ? 'This product aligns well with your ' + goal.name + ' goal.'
+    : 'Note: ' + issues.join(', ') + '.';
+
+  return { fit: fit, label: label, text: text };
+}
+
+function resetScan() {
+  document.getElementById('results-empty').style.display = 'block';
+  document.getElementById('results-content').style.display = 'none';
+  currentScanData = null;
+  lastScanned = '';
+  setStatus('Ready to scan');
+  document.getElementById('manual-barcode').value = '';
 }
