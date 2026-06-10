@@ -83,6 +83,48 @@ function lookupManual() {
   lookupBarcode(val);
 }
 
+// lookup query by primary key
+// barcode (key) -> food database (lookup) 
+async function lookupBarcode(code) {
+  setStatus('Found barcode: ' + code + ' — looking up...', 'loading');
+  stopScanner();
+
+  try {
+    var url = 'https://world.openfoodfacts.org/api/v0/product/' + code + '.json';
+    var response = await fetch(url);
+    var data = await response.json();
+
+    if (data.status === 0 || !data.product) {
+      setStatus('Product not found. Try another barcode.', 'error');
+      return;
+    }
+
+    var p = data.product;
+    var n = p.nutriments || {};
+
+    var parsed = {
+      product: p.product_name || 'Unknown Product',
+      brand: p.brands || '',
+      serving: p.serving_size ? 'Serving: ' + p.serving_size : 'Per 100g',
+      calories: Math.round(n['energy-kcal_100g'] || 0),
+      protein_g: Math.round((n.proteins_100g || 0) * 10) / 10,
+      sat_fat_g: Math.round((n['saturated-fat_100g'] || 0) * 10) / 10,
+      total_sugar_g: Math.round((n.sugars_100g || 0) * 10) / 10,
+      fiber_g: Math.round((n.fiber_100g || 0) * 10) / 10,
+      fat_g: Math.round((n.fat_100g || 0) * 10) / 10,
+      carbs_g: Math.round((n.carbohydrates_100g || 0) * 10) / 10,
+      sodium_mg: Math.round((n.sodium_100g || 0) * 1000),
+      barcode: code
+    };
+
+    setStatus('Product found: ' + parsed.product, 'found');
+    showResults(parsed);
+
+  } catch(e) {
+    setStatus('Network error. Check your connection.', 'error');
+  }
+}
+
 // Popup notifications addition
 var toastTimer;
 
